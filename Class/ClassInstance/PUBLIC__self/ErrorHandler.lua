@@ -7,8 +7,8 @@ local typeof = function(a)
 end
 
 
-local module = {};
-function module:Index(obj, i)
+local ErrorHandler = {};
+function ErrorHandler:Index(obj, i)
 	local __:{};
 	local __type = typeof(obj);
 	local __tostring = tostring(obj);
@@ -51,4 +51,4 @@ function module:Index(obj, i)
 	end
 	return string.format("\"%s\" is not a valid member of %s%s", i, __tostring, str or ''), 2;
 end
-return module;
+return ErrorHandler;
