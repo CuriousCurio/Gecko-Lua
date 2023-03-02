@@ -1,10 +1,12 @@
 --!nocheck
 local ClassInstance = require(script.Parent.ClassInstance.ClassInstance);
 local RBXScriptSignal = require(script.Parent.RBXScriptSignal.RBXScriptSignal);
-local PUBLIC;
+
+
+local __index;
 local Class = {
 	__index = function(self, i) -- [self, PUBLIC, __struct]
-		local v = PUBLIC[i];
+		local v = __index[i];
 		if (v ~= nil) then return v; end
 		local v = self.__struct[i];
 		if (v ~= nil) then return v; end -- For Struct methods, and library properties
@@ -22,7 +24,7 @@ local Class = {
 
 
 
-PUBLIC = {
+__index = {
 	Search = function(self, obj:Instance) -- Gets the ClassInstance of a Instance, if part of this class
 		local instances:{} = self.Instances;
 		local find:nil|Instance = instances[obj];
@@ -35,19 +37,19 @@ PUBLIC = {
 		return pairs(self.Instances);
 	end,
 	Destroy = function(self) -- Destroys all of the Instances in a class
-		local __self_instances:{},ni = {},1;
+		local __private_instances:{},ni = {},1;
 		for obj in pairs(self.Instances) do -- Copying Instances
-			__self_instances[ni], ni = obj.__self, ni+1;
+			__private_instances[ni], ni = obj.__private, ni+1;
 		end
 		for connection in pairs(self.Removing) do
 			pcall(connection);
 		end
-		for _,__self in ipairs(__self_instances) do		-- Disconnecting Connections First (Preventing :Destroy from erroring)
-			__self:disconnect();
+		for _,__private in ipairs(__private_instances) do		-- Disconnecting Connections First (Preventing :Destroy from erroring)
+			__private:disconnect();
 		end
 		task.wait(0.5)
-		for _,__self in ipairs(__self_instances) do		-- Destroying Objects Last
-			__self:destroy();
+		for _,__private in ipairs(__private_instances) do		-- Destroying Objects Last
+			__private:destroy();
 		end
 		table.clear(self);
 
