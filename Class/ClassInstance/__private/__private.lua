@@ -1,6 +1,6 @@
 -- This module returns a __private library for the ClassInstance type
 local ErrorHandler = require(script.Parent.ErrorHandler);
-local CastHandler = require(script.Parent.CastHandler);
+local TypeCaster = require(script.Parent.TypeCaster);
 local VirtualConnector = require(script.Parent.VirtualConnector);
 local RBXMaid = require(script.Parent.Parent.Parent.RBXMaid);
 local Struct = require(script.Parent.Parent.Parent.Struct.Struct);
@@ -172,7 +172,7 @@ __private.__index = {
 		end
 		-----------------------------
 		local from = self:get__(i);
-		v = CastHandler:Cast(self:get__type(i), from, v,  i);
+		v = TypeCaster:Cast(self:get__type(i), from, v,  i);
 		if (from == v) then return; end -- If not a new value, then return
 		
 		local __newindex = self:get__newindex(i);
@@ -207,7 +207,7 @@ __private.__index = {
 			return self:rawset__super(i, v, _ref_ or self);
 		end
 		-----------------------------
-		v = CastHandler:Cast(self:get__type(i), self:get__(i), v,    i);
+		v = TypeCaster:Cast(self:get__type(i), self:get__(i), v,    i);
 		self:set__(i, v);
 	end,
 	rawget = function(self, i,    _ref_:nil)  -- Gets a property, without calling __index
