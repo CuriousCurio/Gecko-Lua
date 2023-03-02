@@ -5,31 +5,31 @@ local typeof = function(a)
 	return meta.__type;
 end
 
-local Struct = require(script.Parent.Parent.Struct.Struct);
+local P__private = require(script.Parent.__private.__private);
+local Struct = P__private.Struct;
 
-local PUBLIC__self = require(script.Parent.PUBLIC__self.PUBLIC__self);
-local PUBLIC__struct = Struct.new(require(script.Parent.PUBLIC__struct));
+local P__struct = Struct.new(require(script.Parent.__struct));
 
 
 local ClassInstance = {
 	__index = function(self, i)
-		local __self = self.__self;
-		local f = getmetatable(__self).__index[i];
-		if (f) then return function(_, ...) return f(__self, ...); end; end
+		local __private = self.__private;
+		local f = getmetatable(__private).__index[i];
+		if (f) then return function(_, ...) return f(__private, ...); end; end
 
-		return __self:get(i);
+		return __private:get(i);
 	end,
 	__newindex = function(self, i, v)
-		local __self = self.__self;
-		return __self:set(i, v);
+		local __private = self.__private;
+		return __private:set(i, v);
 	end,
 	__eq = function(a, b)
 		if (typeof(a) ~= "ClassInstance") then return rawequal(a, b); end
 		return (typeof(b) == "Class" and a:IsA(b)) or rawequal(a, b);  -- If the instance is equal to it"s class
 	end,
 	__tostring = function(self)
-		local __self = self.__self;
-		local __tostring = __self:get__("__tostring");
+		local __private = self.__private;
+		local __tostring = __private:get__("__tostring");
 		if (__tostring) then return __tostring(self); end
 		return self.ClassName or getmetatable(self).__type;
 	end,
@@ -38,28 +38,24 @@ local ClassInstance = {
 
 
 ClassInstance.Struct = Struct;
-ClassInstance.PUBLIC__self = PUBLIC__self;
 function ClassInstance.new(class, ...)
-	local self = setmetatable({   __self = PUBLIC__self.new()   }, ClassInstance);
-	local __self = self.__self;
-	rawset(__self, "__self", self);
-	rawset(__self, "__class", class);
-	rawset(__self, "__struct", Struct.new());
-
+	local self = setmetatable({}, ClassInstance);
+	local __private = P__private.new(class, self);
+	rawset(self, "__private", __private);
 
 	-- Inserting Initial Libraries --
-	__self.__struct:Insert(PUBLIC__struct);
-	__self.__struct:Insert(class.__struct);
-	PUBLIC__struct.__.__init(self);
+	__private.__struct:Insert(P__struct);
+	__private.__struct:Insert(class.__struct);
+	P__struct.__.__init(self);
 
-	__self:refresh__virtual();
-	local __init = __self:get__("__init");
+	__private:refresh__virtual();
+	local __init = __private:get__("__init");
 	if (__init) then __init(self, ...); end
 
 	local __init__newindex_auto = class.__init__newindex_auto;
-	if (__init__newindex_auto == nil or __init__newindex_auto == true) then __self:update_all(); end
-	__self:set__('__init', nil);
-	__self:set__('__init__newindex_auto', nil);
+	if (__init__newindex_auto == nil or __init__newindex_auto == true) then __private:update_all(); end
+	__private:set__('__init', nil);
+	__private:set__('__init__newindex_auto', nil);
 
 	-- Class Matience --
 	class.Instances[self] = true;
