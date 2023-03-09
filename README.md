@@ -2,6 +2,6 @@
 
 A Luau (Roblox Lua) Class creator
 
-Much like C++, C#, Java    But in lua
+Creates classes that preform like C++, C#, Java    But in lua
 
 I'll add completed documentation later
